@@ -1,0 +1,42 @@
+
+.boxs{
+    max-height: 400px; 
+     
+}
+
+.imgbox{
+    object-fit:100% 100%;
+}
+
+.icoon{
+    width:5vw;
+    height:5vw;
+
+}
+.icoonImg{  
+    height: 100%;
+    width: 100%;
+    object-fit:contain;
+}
+.carousel-caption{
+    position: absolute;
+    text-align: center;
+    top: 50%;
+}
+
+
+
+
+
+/*Details */
+
+main{
+    margin: 5vw;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+}
+
+.card{
+    max-width: 800px;
+}
