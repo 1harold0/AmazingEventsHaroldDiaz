@@ -214,7 +214,7 @@ function createTarjetas(mostrarTarjeta, tarjeta) {
     cardImage.classList.add("card-img-top");
     cardImage.src = tarjeta.image;
     cardImage.alt = tarjeta.name;
-    cardImage.style.height = "30vh"
+    cardImage.style.height = "25vh"
     
 
     let cardBody = document.createElement("div");
