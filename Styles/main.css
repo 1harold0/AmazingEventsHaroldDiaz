@@ -26,11 +26,9 @@
 
 
 
-
-
 /*Details */
 
-main{
+.detailsContainer{
     margin: 5vw;
     height: 80vh;
     display: flex;
