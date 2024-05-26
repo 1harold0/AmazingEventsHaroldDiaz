@@ -196,7 +196,7 @@ let data = {
 };
 
 
-let containerTarjetas = document.getElementById("padre")
+let containerTarjetas = document.getElementById("padreTarjetas")
 
 for (let index = 0; index < data.events.length; index++) {
     let event = data.events[index];
@@ -242,7 +242,7 @@ function createTarjetas(mostrarTarjeta, tarjeta) {
 
     let cardLinkDetails = document.createElement("a");
     cardLinkDetails.classList.add("card-link", "btn", "btn-primary");
-    cardLinkDetails.href = "details.html";
+    cardLinkDetails.href = "details.html?id=" + tarjeta._id;
     cardLinkDetails.textContent = "Details";
 
     //aca formo mi tarjeta 
@@ -257,6 +257,90 @@ function createTarjetas(mostrarTarjeta, tarjeta) {
 
 
     mostrarTarjeta.appendChild(newCard);
+}
+
+
+// Checkbox
+let containerCheckbox = document.getElementById("padreCheckbox");
+
+let categories = [];
+data.events.forEach(event => {
+    if (!categories.includes(event.category)) {
+        categories.push(event.category);
+    }
+});
+categories.forEach(category => {
+    createCheckbox(category);
+});
+
+function createCheckbox(category) {
+    let newCheckbox = document.createElement("div");
+    newCheckbox.classList.add("form-check", "form-check-inline");
+    newCheckbox.innerHTML = `
+        <input class="form-check-input" type="checkbox" name="categoryOptions" id="${category}" 
+value="${category}">
+        <label class="form-check-label" for="${category}">${category}</label>
+    `;
+    containerCheckbox.appendChild(newCheckbox);
+}
+
+containerCheckbox.addEventListener('change', function(event) {
+    let buscarCategorias = Array.from(document.querySelectorAll('input[name="categoryOptions"]:checked')).map(checkbox => checkbox.value);
+    
+    let filtrarEventos;
+    if (buscarCategorias.length > 0) {
+        filtrarEventos = data.events.filter(event => buscarCategorias.includes(event.category));
+    } else {
+        filtrarEventos = data.events; 
+    }
+
+
+    containerTarjetas.innerHTML = "";
+
+
+    filtrarEventos.forEach(event => {
+        createTarjetas(containerTarjetas, event); 
+    });
+});
+
+
+//search
+document.querySelector('input[type="search"]').addEventListener('input', updateDisplayedEvents);
+containerCheckbox.addEventListener('change', updateDisplayedEvents);
+
+function updateDisplayedEvents() {
+    let buscarTexto = document.querySelector('input[type="search"]').value.trim();
+    let buscarCategorias = Array.from(document.querySelectorAll('input[name="categoryOptions"]:checked')).map(checkbox => checkbox.value);
+
+  
+    let filtrarEventos;
+    if (buscarCategorias.length > 0) {
+        filtrarEventos = filterEvents(buscarTexto, buscarCategorias);
+    } else {
+        filtrarEventos = filterEvents(buscarTexto, categories);
+    }
+
+    containerTarjetas.innerHTML = "";
+
+
+    filtrarEventos.forEach(event => {
+        createTarjetas(containerTarjetas, event); 
+    });
+}
+
+
+function filterEvents(buscarTexto, buscarCategorias) {
+
+    let filteredByCategoriesAndDates = data.events.filter(event => {
+        return buscarCategorias.includes(event.category) && event.date < data.currentDate;
+    });
+    
+
+    if (buscarTexto.trim() !== "") {
+        return filteredByCategoriesAndDates.filter(event => event.name.toLowerCase().includes(buscarTexto.toLowerCase()));
+    } else {
+        return filteredByCategoriesAndDates;
+    }
 }
 
 

@@ -196,26 +196,23 @@ let data = {
 };
 
 
-let containerTarjetas = document.getElementById("padre")
+let containerTarjetas = document.getElementById("padreTarjetas")
 
 for (let index = 0; index < data.events.length; index++) {
-    createTarjetas(containerTarjetas,data.events[index]);
+    createTarjetas(containerTarjetas, data.events[index]);
 
 }
-
 
 function createTarjetas(mostrarTarjeta, tarjeta) {
     let newCard = document.createElement("div");
     newCard.classList.add("card", "m-3");
     newCard.style.width = "18rem";
-   
 
     let cardImage = document.createElement("img");
     cardImage.classList.add("card-img-top");
     cardImage.src = tarjeta.image;
     cardImage.alt = tarjeta.name;
-    cardImage.style.height = "25vh"
-    
+    cardImage.style.height = "25vh";
 
     let cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
@@ -237,10 +234,10 @@ function createTarjetas(mostrarTarjeta, tarjeta) {
 
     let cardLinkDetails = document.createElement("a");
     cardLinkDetails.classList.add("card-link", "btn", "btn-primary");
-    cardLinkDetails.href = "details.html";
+    cardLinkDetails.href = "details.html?id=" + tarjeta._id;
     cardLinkDetails.textContent = "Details";
 
-    //aca formo mi tarjeta 
+    // Formo la tarjeta 
     cardBody.appendChild(cardTitle);
     cardBody.appendChild(cardText);
     cardButton.appendChild(cardLinkPrice);
@@ -250,8 +247,88 @@ function createTarjetas(mostrarTarjeta, tarjeta) {
     newCard.appendChild(cardBody);
     newCard.appendChild(cardButton);
 
-    
     mostrarTarjeta.appendChild(newCard);
 }
 
+// Checkbox
+let containerCheckbox = document.getElementById("padreCheckbox");
 
+// busco las categorías  y guardo checkbox
+let categories = [];
+data.events.forEach(event => {
+    if (!categories.includes(event.category)) {
+        categories.push(event.category);
+    }
+});
+categories.forEach(category => {
+    createCheckbox(category);
+});
+
+// Función para crear un checkbox
+function createCheckbox(category) {
+    let newCheckbox = document.createElement("div");
+    newCheckbox.classList.add("form-check", "form-check-inline");
+    newCheckbox.innerHTML = `
+        <input class="form-check-input" type="checkbox" name="categoryOptions" id="${category}" 
+value="${category}">
+        <label class="form-check-label" for="${category}">${category}</label>
+    `;
+    containerCheckbox.appendChild(newCheckbox);
+}
+
+// filro para busca las caegorias 
+containerCheckbox.addEventListener('change', function(event) {
+    let buscarCategorias = Array.from(document.querySelectorAll('input[name="categoryOptions"]:checked')).map(checkbox => checkbox.value);
+    
+    let filtrarEventos;
+    if (buscarCategorias.length > 0) {
+        filtrarEventos = data.events.filter(event => buscarCategorias.includes(event.category));
+    } else {
+        filtrarEventos = data.events; 
+    }
+    
+   
+    containerTarjetas.innerHTML = "";
+    
+
+    filtrarEventos.forEach(event => {
+        createTarjetas(containerTarjetas, event); 
+    });
+});
+
+
+//search
+document.querySelector('input[type="search"]').addEventListener('input', updateDisplayedEvents);
+containerCheckbox.addEventListener('change', updateDisplayedEvents);
+
+
+function updateDisplayedEvents() {
+    let buscarTexto = document.querySelector('input[type="search"]').value.trim();
+    let buscarCategorias = Array.from(document.querySelectorAll('input[name="categoryOptions"]:checked')).map(checkbox => checkbox.value);
+
+    // Obtener eventos filtrados
+    let filtrarEventos;
+    if (buscarCategorias.length > 0) {
+        filtrarEventos = filterEvents(buscarTexto, buscarCategorias);
+    } else {
+        filtrarEventos = filterEvents(buscarTexto, categories);
+    }
+
+    containerTarjetas.innerHTML = "";
+
+    // nostrar eventos filtrados
+    filtrarEventos.forEach(event => {
+        createTarjetas(containerTarjetas, event); 
+    });
+}
+function filterEvents(buscarTexto, buscarCategorias) {
+ 
+    let filteredByCategories = data.events.filter(event => buscarCategorias.includes(event.category));
+   
+   
+    if (buscarTexto.trim() !== "") {
+        return filteredByCategories.filter(event => event.name.toLowerCase().includes(buscarTexto.toLowerCase()));
+    } else {
+        return filteredByCategories;
+    }
+}
